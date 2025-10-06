@@ -14,7 +14,7 @@ import (
 var GetChangeTool = mcp.NewTool("get_change",
 	mcp.WithDescription("Get information about a Gerrit change by its Change-Id. Returns details like project, branch, subject, status, and current revision."),
 	mcp.WithString("changeId",
-		mcp.Description("The Gerrit Change-Id (e.g., I1234567890abcdef...). If omitted, will auto-detect from current git commit."),
+		mcp.Description("The Gerrit Change-Id (e.g., I1234567890abcdef...). Optional - if not provided, automatically uses the Change-Id from the current git commit."),
 	),
 	mcp.WithString("directory",
 		mcp.Description("The directory containing the git repository (used to determine Gerrit host)"),

@@ -13,7 +13,7 @@ import (
 var DraftCommentTool = mcp.NewTool("draft_comment",
 	mcp.WithDescription("Create a draft comment or reply on a Gerrit change. Drafts are not visible until published with publish_review."),
 	mcp.WithString("changeId",
-		mcp.Description("The Gerrit Change-Id (e.g., I1234567890abcdef...). If omitted, will auto-detect from current git commit."),
+		mcp.Description("The Gerrit Change-Id (e.g., I1234567890abcdef...). Optional - if not provided, automatically uses the Change-Id from the current git commit."),
 	),
 	mcp.WithString("message",
 		mcp.Required(),

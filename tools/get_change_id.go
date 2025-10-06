@@ -10,7 +10,7 @@ import (
 
 // GetChangeIDTool is the tool definition for get_change_id
 var GetChangeIDTool = mcp.NewTool("get_change_id",
-	mcp.WithDescription("Get the Gerrit Change-Id from the current git commit in the specified directory. Returns the Change-Id (e.g., I1234567890abcdef...) that can be used with other Gerrit tools."),
+	mcp.WithDescription("Get the Gerrit Change-Id from the current git commit. Note: Other Gerrit tools automatically detect the Change-Id from the current commit, so you typically don't need to call this tool first. Use this only if you need to explicitly retrieve or display the Change-Id."),
 	mcp.WithString("directory",
 		mcp.Description("The directory containing the git repository"),
 	),

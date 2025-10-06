@@ -13,7 +13,7 @@ import (
 var PublishReviewTool = mcp.NewTool("publish_review",
 	mcp.WithDescription("Submit and publish a review for a Gerrit change. This publishes all draft comments (making them visible to others) and optionally includes a review message."),
 	mcp.WithString("changeId",
-		mcp.Description("The Gerrit Change-Id (e.g., I1234567890abcdef...). If omitted, will auto-detect from current git commit."),
+		mcp.Description("The Gerrit Change-Id (e.g., I1234567890abcdef...). Optional - if not provided, automatically uses the Change-Id from the current git commit."),
 	),
 	mcp.WithString("message",
 		mcp.Description("Optional review message to include with the published comments"),

@@ -14,7 +14,7 @@ import (
 var GetUnresolvedCommentsTool = mcp.NewTool("get_unresolved_comments",
 	mcp.WithDescription("Get all unresolved comments for a Gerrit change. Returns a list of comments with their file path, line number, message, and author. These are the comments that need to be addressed."),
 	mcp.WithString("changeId",
-		mcp.Description("The Gerrit Change-Id (e.g., I1234567890abcdef...). If omitted, will auto-detect from current git commit."),
+		mcp.Description("The Gerrit Change-Id (e.g., I1234567890abcdef...). Optional - if not provided, automatically uses the Change-Id from the current git commit."),
 	),
 	mcp.WithString("directory",
 		mcp.Description("The directory containing the git repository (used to determine Gerrit host)"),
