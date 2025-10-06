@@ -4,6 +4,8 @@ import (
 	"log"
 	"log/slog"
 	"os"
+	"os/signal"
+	"syscall"
 
 	"github.com/bajankristof/gerry/config"
 	"github.com/bajankristof/gerry/tools"
@@ -16,25 +18,32 @@ func main() {
 		Level: slog.LevelDebug,
 	})))
 
-	// Load config once at startup
 	cfg, err := config.Load()
 	if err != nil {
 		log.Fatalf("Failed to load config: %v", err)
 	}
 
-	// Create MCP server
 	s := server.NewMCPServer(
 		"gerry",
 		"1.0.0",
 		server.WithToolCapabilities(true),
 	)
-
-	// Register tools
 	tools.Inject(s, cfg)
 
-	// Start server with stdio transport
-	if err := server.ServeStdio(s); err != nil {
+	sigs := make(chan os.Signal, 1)
+	signal.Notify(sigs, os.Interrupt, syscall.SIGTERM)
+
+	errs := make(chan error, 1)
+	go func() {
+		if err := server.ServeStdio(s); err != nil {
+			errs <- err
+		}
+	}()
+
+	select {
+	case <-sigs:
+		os.Exit(0)
+	case err := <-errs:
 		log.Fatalf("Server error: %v", err)
-		os.Exit(1)
 	}
 }

@@ -35,20 +35,39 @@ To get your Gerrit HTTP password:
 
 Run `claude mcp add gerry gerry` to add Gerry to your Claude Code instance.
 
+## Usage
+
+The tool will only work within a git repository that has Gerrit commits.
+
 ## Available Tools
 
-- **gerrit_get_change_id** - Get the Change-Id from the current git repository
-- **gerrit_get_change** - Get detailed information about a Gerrit change
-- **gerrit_get_comments** - Get all comments for a change
-- **gerrit_get_unresolved_comments** - Get only unresolved comments for a change
-- **gerrit_post_comment_reply** - Post a reply to a comment
+- **get_change_id** - Get the Change-Id from the current git repository
+- **get_change** - Get detailed information about a Gerrit change
+- **get_comments** - Get all comments for a change
+- **get_unresolved_comments** - Get only unresolved comments for a change
+- **draft_comment** - Create a draft comment or reply on a change
+- **publish_review** - Publish all draft comments and submit a review
 
-## Usage Example
+### Automatic Change ID Inference
+
+Most tools support automatic change ID detection. You can omit the `changeId` parameter and the tool will automatically extract it from your current commit. This makes it easier to work with your current change:
+
+```
+# Instead of:
+"Get unresolved comments for change I1234567890abcdef"
+
+# You can simply say:
+"Get unresolved comments for my current change"
+```
+
+## Usage Examples
 
 After setting up, you can ask Claude Code:
 
-> "What are the unresolved comments on change I1234567890abcdef?"
+> "What are the unresolved comments on my current CR?"
 
-> "Get the change information for the current repository"
+> "Draft a reply to the comment on line 42 of main.go saying 'Fixed in latest patch set'"
 
-> "Reply to comment abc123 with 'Fixed in latest patch set'"
+> "Publish my review with message 'Addressed all feedback'"
+
+> "Get the change information for I1234567890abcdef"

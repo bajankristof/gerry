@@ -10,24 +10,23 @@ import (
 	"github.com/mark3labs/mcp-go/mcp"
 )
 
-// GetChangeTool is the tool definition for gerrit_get_change
-var GetChangeTool = mcp.NewTool("gerrit_get_change",
+// GetChangeTool is the tool definition for get_change
+var GetChangeTool = mcp.NewTool("get_change",
 	mcp.WithDescription("Get information about a Gerrit change by its Change-Id. Returns details like project, branch, subject, status, and current revision."),
 	mcp.WithString("changeId",
-		mcp.Required(),
-		mcp.Description("The Gerrit Change-Id (e.g., I1234567890abcdef...)"),
+		mcp.Description("The Gerrit Change-Id (e.g., I1234567890abcdef...). If omitted, will auto-detect from current git commit."),
 	),
 	mcp.WithString("directory",
 		mcp.Description("The directory containing the git repository (used to determine Gerrit host)"),
 	),
 )
 
-// HandleGetChange handles the gerrit_get_change tool call
+// HandleGetChange handles the get_change tool call
 func HandleGetChange(cfg *config.Config) func(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
 	return func(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
-		changeID, err := request.RequireString("changeId")
+		changeID, err := inferChangeID(request)
 		if err != nil {
-			return mcp.NewToolResultError("changeId is required"), nil
+			return mcp.NewToolResultError(fmt.Sprintf("Error: %v", err)), nil
 		}
 
 		directory := request.GetString("directory", "")

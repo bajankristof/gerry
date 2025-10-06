@@ -34,12 +34,12 @@ type Comment struct {
 	ID         string `json:"id"`
 	Author     Author `json:"author"`
 	Message    string `json:"message"`
-	Path       string `json:"path"`
+	Path       string `json:"path,omitempty"`
 	Line       int    `json:"line,omitempty"`
 	Range      *Range `json:"range,omitempty"`
 	Unresolved bool   `json:"unresolved"`
 	PatchSet   int    `json:"patch_set"`
-	File       string `json:"file,omitempty"`
+	InReplyTo  string `json:"in_reply_to,omitempty"`
 }
 
 // Change represents a Gerrit change
@@ -128,9 +128,9 @@ func (c *Client) GetComments(changeID string) ([]Comment, error) {
 	rawComments := *resp.Result().(*map[string][]Comment)
 
 	var result []Comment
-	for file, comments := range rawComments {
+	for path, comments := range rawComments {
 		for _, comment := range comments {
-			comment.File = file
+			comment.Path = path
 			result = append(result, comment)
 		}
 	}
@@ -155,12 +155,44 @@ func (c *Client) GetUnresolvedComments(changeID string) ([]Comment, error) {
 	return result, nil
 }
 
-// PostCommentReply posts a reply to a comment
-func (c *Client) PostCommentReply(changeID, commentID, message string) error {
-	path := fmt.Sprintf("/changes/%s/comments/%s", url.PathEscape(changeID), commentID)
+// DraftCommentInput represents a draft comment or reply
+type DraftCommentInput struct {
+	Message    string `json:"message"`
+	Path       string `json:"path"`
+	Line       int    `json:"line,omitempty"`
+	InReplyTo  string `json:"in_reply_to,omitempty"`
+	Unresolved bool   `json:"unresolved,omitempty"`
+}
+
+// DraftComment creates a draft comment or reply
+func (c *Client) DraftComment(changeID string, input DraftCommentInput) error {
+	path := fmt.Sprintf("/changes/%s/revisions/current/drafts", url.PathEscape(changeID))
 
 	_, err := c.client.R().
-		SetBody(map[string]string{"message": message}).
+		SetBody(input).
+		Put(path)
+
+	return err
+}
+
+// PublishReviewInput represents a review to be published
+type PublishReviewInput struct {
+	Message string `json:"message,omitempty"`
+}
+
+// PublishReview publishes all draft comments for a change
+func (c *Client) PublishReview(changeID string, input PublishReviewInput) error {
+	path := fmt.Sprintf("/changes/%s/revisions/current/review", url.PathEscape(changeID))
+
+	body := map[string]any{"drafts":  "PUBLISH_ALL_REVISIONS"}
+	if input.Message != "" {
+		body["comments"] = map[string][]map[string]any{
+			"/PATCHSET_LEVEL": {{"message": input.Message}},
+		}
+	}
+
+	_, err := c.client.R().
+		SetBody(body).
 		Post(path)
 
 	return err

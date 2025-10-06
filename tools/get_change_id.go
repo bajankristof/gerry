@@ -8,15 +8,15 @@ import (
 	"github.com/mark3labs/mcp-go/mcp"
 )
 
-// GetChangeIDTool is the tool definition for gerrit_get_change_id
-var GetChangeIDTool = mcp.NewTool("gerrit_get_change_id",
+// GetChangeIDTool is the tool definition for get_change_id
+var GetChangeIDTool = mcp.NewTool("get_change_id",
 	mcp.WithDescription("Get the Gerrit Change-Id from the current git commit in the specified directory. Returns the Change-Id (e.g., I1234567890abcdef...) that can be used with other Gerrit tools."),
 	mcp.WithString("directory",
 		mcp.Description("The directory containing the git repository"),
 	),
 )
 
-// HandleGetChangeID handles the gerrit_get_change_id tool call
+// HandleGetChangeID handles the get_change_id tool call
 func HandleGetChangeID(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
 	directory := request.GetString("directory", "")
 
