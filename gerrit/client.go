@@ -51,6 +51,10 @@ type Change struct {
 	Subject         string `json:"subject"`
 	Status          string `json:"status"`
 	CurrentRevision string `json:"current_revision"`
+	Revisions       map[string]struct {
+		Kind string `json:"kind"`
+		Ref  string `json:"ref"`
+	} `json:"revisions"`
 }
 
 // Client provides methods to interact with Gerrit
@@ -106,7 +110,7 @@ func (c *Client) Host() string {
 
 // GetChange gets change information by Change-Id
 func (c *Client) GetChange(changeID string) (Change, error) {
-	path := fmt.Sprintf("/changes/%s", url.PathEscape(changeID))
+	path := fmt.Sprintf("/changes/%s?o=ALL_REVISIONS", url.PathEscape(changeID))
 
 	resp, err := c.client.R().SetResult(Change{}).Get(path)
 	if err != nil {
@@ -184,7 +188,7 @@ type PublishReviewInput struct {
 func (c *Client) PublishReview(changeID string, input PublishReviewInput) error {
 	path := fmt.Sprintf("/changes/%s/revisions/current/review", url.PathEscape(changeID))
 
-	body := map[string]any{"drafts":  "PUBLISH_ALL_REVISIONS"}
+	body := map[string]any{"drafts": "PUBLISH_ALL_REVISIONS"}
 	if input.Message != "" {
 		body["comments"] = map[string][]map[string]any{
 			"/PATCHSET_LEVEL": {{"message": input.Message}},
